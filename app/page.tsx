@@ -1,10 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Loader2, RefreshCw, MessageSquareIcon as MessageSquareQuestion, ChevronDown, ChevronUp } from "lucide-react"
+import { Loader2, RefreshCw, MessageSquareIcon as MessageSquareQuestion, Plus } from "lucide-react"
 
 export default function QuestionPage() {
   const [topic, setTopic] = useState<string>("")
@@ -13,6 +13,18 @@ export default function QuestionPage() {
   const [questionToDisplay, setQuestionToDisplay] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState<boolean>(false)
   const [error, setError] = useState<string | null>(null)
+
+  const topicInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (isTopicInputVisible && topicInputRef.current) {
+      // Delay focus slightly to allow for CSS transition to complete
+      const timer = setTimeout(() => {
+        topicInputRef.current?.focus()
+      }, 350) // Adjust timing if your transition duration changes
+      return () => clearTimeout(timer)
+    }
+  }, [isTopicInputVisible])
 
   const fetchQuestion = async () => {
     setIsLoading(true)
@@ -84,28 +96,39 @@ export default function QuestionPage() {
           <CardDescription className="text-md">Spark a conversation with your team!</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
+          <div className="flex items-center justify-center w-full space-x-2">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Select Topic</span>
             <Button
               variant="outline"
-              onClick={() => setIsTopicInputVisible(!isTopicInputVisible)}
-              className="w-full flex items-center justify-between"
+              size="icon"
+              className="rounded-full h-8 w-8 flex-shrink-0"
+              onClick={() => {
+                setIsTopicInputVisible(!isTopicInputVisible)
+              }}
               aria-expanded={isTopicInputVisible}
+              aria-label={isTopicInputVisible ? "Hide topic input" : "Show topic input"}
             >
-              <span>{isTopicInputVisible ? "Hide Topic Input" : "Select Topic (Optional)"}</span>
-              {isTopicInputVisible ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              <Plus
+                className={`h-4 w-4 transition-transform duration-300 ease-in-out ${
+                  isTopicInputVisible ? "rotate-45" : "rotate-0"
+                }`}
+              />
             </Button>
-            {isTopicInputVisible && (
-              <div className="transition-all duration-300 ease-in-out">
-                <Input
-                  type="text"
-                  placeholder="E.g., 'teamwork', 'future tech'"
-                  value={topic}
-                  onChange={(e) => setTopic(e.target.value)}
-                  className="w-full mt-2"
-                  aria-label="Question topic"
-                />
-              </div>
-            )}
+            <div
+              className={`flex-grow transition-all duration-300 ease-in-out overflow-hidden flex items-center ${
+                isTopicInputVisible ? "max-w-xs opacity-100 ml-1" : "max-w-0 opacity-0"
+              }`}
+            >
+              <Input
+                ref={topicInputRef}
+                type="text"
+                placeholder="E.g., 'teamwork'"
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                className="w-full h-10" // Ensure input has a defined height for smooth transition
+                aria-label="Question topic"
+              />
+            </div>
           </div>
 
           <Button onClick={handleGeneratePress} disabled={isLoading} className="w-full text-lg py-6" size="lg">
