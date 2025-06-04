@@ -28,7 +28,6 @@ export default function QuestionPage() {
 
   const fetchQuestion = async () => {
     setIsLoading(true)
-    setError(null)
 
     if (questionToDisplay) {
       // Start fade-out for the old question
@@ -126,21 +125,17 @@ export default function QuestionPage() {
             </div>
           </div>
 
-          {!currentQuestion && (
-            <Button onClick={handleGeneratePress} disabled={isLoading} className="w-full text-lg py-6" size="lg">
-              {isLoading && !questionToDisplay ? ( // Show loader only if no question is currently displayed and loading
-                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-              ) : null}
-              Create a Question
-            </Button>
-          )}
+          <div className="h-[160px] flex items-center justify-center relative">
+            {!currentQuestion && (
+              <Button onClick={handleGeneratePress} disabled={isLoading} className="w-full text-lg py-6" size="lg">
+                {isLoading ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : null}
+                Create a Question
+              </Button>
+            )}
 
-          {error && <p className="text-center text-red-500 dark:text-red-400">{error}</p>}
-
-          <div className="min-h-[120px] flex items-center justify-center">
-            <div className={`transition-opacity duration-500 ease-in-out w-full ${questionToDisplay ? "opacity-100" : "opacity-0"}`}>
+            <div className={`absolute inset-0 transition-opacity duration-500 ease-in-out w-full flex items-center justify-center p-6 ${(questionToDisplay || (isLoading && currentQuestion)) ? "opacity-100" : "opacity-0 pointer-events-none"}`}>
               {(questionToDisplay || (isLoading && currentQuestion)) && (
-                <div className="text-center p-6 bg-slate-100 dark:bg-slate-800 rounded-lg shadow">
+                <div className="text-center p-6 rounded-lg  w-full">
                   {questionToDisplay && (
                     <p className="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100">
                       {questionToDisplay}
@@ -165,7 +160,7 @@ export default function QuestionPage() {
         </CardContent>
       </Card>
       <footer className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-        <p>Vibed Into Existence By Ben</p>
+        <p>This Was Almost A Oneshot With Cursor</p>
       </footer>
     </div>
   )
