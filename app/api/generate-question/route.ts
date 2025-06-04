@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
 
     let providerModel
     if (process.env.OPENAI_API_KEY) {
-      providerModel = openai("gpt-3.5-turbo")
+      providerModel = openai("gpt-4.1-nano")
     } else if (process.env.ANTHROPIC_API_KEY) {
       // Example: using Anthropic if OpenAI key is not present
       // import { anthropic } from '@ai-sdk/anthropic';
@@ -44,11 +44,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "AI provider API key not configured." }, { status: 500 })
     }
 
-    const prompt = `Generate a single, concise, and thought-provoking "question of the day" for a team.
-The question should be suitable for a work environment to spark discussion, reflection, or a bit of fun.
+    const prompt = `Generate a single, and concise "question of the day" for a team.
+The question should be suitable for a work environment, and serves as a a bit of fun in daily meetings.
 ${topic ? `The question should be related to the topic: "${topic}".` : "The question can be on any general, engaging topic."}
 Do not include any preamble, explanation, or quotation marks around the question itself. Just return the question text.
-Ensure the question is relatively short and easy to understand.`
+Ensure the question is relatively short and easy to understand. DO NOT be cringe. Do not make the question team related.`
 
     const { text } = await generateText({
       model: providerModel, // e.g., openai('gpt-3.5-turbo') or openai('gpt-4o')
