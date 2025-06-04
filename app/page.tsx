@@ -68,15 +68,10 @@ export default function QuestionPage() {
   // Effect to handle fade-in of new question
   useEffect(() => {
     if (currentQuestion) {
-      // This timeout ensures that if there was a fade-out,
-      // the new question fades in after the old one is visually gone.
-      // If no old question, it just fades in.
-      const timer = setTimeout(
-        () => {
-          setQuestionToDisplay(currentQuestion)
-        },
-        questionToDisplay === null && currentQuestion !== null ? 50 : 0,
-      ) // Small delay if it's not the first question
+      // Small delay to ensure smooth transition
+      const timer = setTimeout(() => {
+        setQuestionToDisplay(currentQuestion)
+      }, 100)
       return () => clearTimeout(timer)
     }
   }, [currentQuestion])
@@ -97,7 +92,7 @@ export default function QuestionPage() {
         </CardHeader>
         <CardContent className="space-y-6">
           <div className="flex items-center justify-center w-full space-x-2">
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Select Topic</span>
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 whitespace-nowrap">Select A Topic</span>
             <Button
               variant="outline"
               size="icon"
@@ -122,7 +117,7 @@ export default function QuestionPage() {
               <Input
                 ref={topicInputRef}
                 type="text"
-                placeholder="E.g., 'teamwork'"
+                placeholder="Pick a topic for your question..."
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
                 className="w-full h-10" // Ensure input has a defined height for smooth transition
@@ -131,35 +126,26 @@ export default function QuestionPage() {
             </div>
           </div>
 
-          <Button onClick={handleGeneratePress} disabled={isLoading} className="w-full text-lg py-6" size="lg">
-            {isLoading && !questionToDisplay ? ( // Show loader only if no question is currently displayed and loading
-              <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-            ) : null}
-            {currentQuestion ? "Generate New Question" : "Generate Question"}
-          </Button>
+          {!currentQuestion && (
+            <Button onClick={handleGeneratePress} disabled={isLoading} className="w-full text-lg py-6" size="lg">
+              {isLoading && !questionToDisplay ? ( // Show loader only if no question is currently displayed and loading
+                <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+              ) : null}
+              Create a Question
+            </Button>
+          )}
 
           {error && <p className="text-center text-red-500 dark:text-red-400">{error}</p>}
 
           <div className="min-h-[120px] flex items-center justify-center">
-            {isLoading && !questionToDisplay && (
-              <div className="text-center text-gray-500 dark:text-gray-400">
-                <Loader2 className="h-8 w-8 animate-spin mx-auto mb-2" />
-                <p>Generating your question...</p>
-              </div>
-            )}
-            {!isLoading && !questionToDisplay && !error && !currentQuestion && (
-              <p className="text-center text-gray-500 dark:text-gray-400">Click "Generate Question" to start.</p>
-            )}
-            <div
-              className={`transition-opacity duration-500 ease-in-out w-full ${
-                questionToDisplay ? "opacity-100" : "opacity-0"
-              }`}
-            >
-              {questionToDisplay && (
+            <div className={`transition-opacity duration-500 ease-in-out w-full ${questionToDisplay ? "opacity-100" : "opacity-0"}`}>
+              {(questionToDisplay || (isLoading && currentQuestion)) && (
                 <div className="text-center p-6 bg-slate-100 dark:bg-slate-800 rounded-lg shadow">
-                  <p className="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100">
-                    {questionToDisplay}
-                  </p>
+                  {questionToDisplay && (
+                    <p className="text-xl md:text-2xl font-semibold text-gray-800 dark:text-gray-100">
+                      {questionToDisplay}
+                    </p>
+                  )}
                   <div className="mt-6 flex justify-center">
                     <Button
                       onClick={handleGeneratePress}
@@ -179,7 +165,7 @@ export default function QuestionPage() {
         </CardContent>
       </Card>
       <footer className="mt-8 text-center text-sm text-gray-600 dark:text-gray-400">
-        <p>Powered by Vercel AI SDK</p>
+        <p>Vibed Into Existence By Ben</p>
       </footer>
     </div>
   )
